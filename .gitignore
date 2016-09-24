@@ -1,0 +1,14 @@
+
+*.db
+*.opendb
+*.suo
+
+x64/
+xcuserdata/
+.idea/
+out/
+dtm/
+*~
+
+build/
+install/
