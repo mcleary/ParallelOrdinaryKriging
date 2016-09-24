@@ -38,4 +38,4 @@ The XYZ File is a simple point cloud format where each line represents a point i
 - Review the matrix-vector multiplication code for GPUs
 
 ## Contact
-Please, feel free to file an issue directly in this repository or send an email to tluis@ice.ufjf.br.
+Please, feel free to file an issue directly in this repository or send an email to [tluis@ice.ufjf.br](mailto:tluis@ice.ufjf.br)
