@@ -13,7 +13,7 @@ find_package(OpenCL REQUIRED)
 include_directories(${OpenCL_INCLUDE_DIRS})
 
 add_executable(
-  ParallelDTM
+  ParallelOK
   CommandLineParser.cpp
   ComputePlatform.cpp
   DistancesMatrixOperation.cpp
@@ -40,5 +40,5 @@ set(
 )
 
 
-INSTALL(TARGETS ParallelDTM DESTINATION ${CMAKE_INSTALL_PREFIX})
+INSTALL(TARGETS ParallelOK DESTINATION ${CMAKE_INSTALL_PREFIX})
 INSTALL(FILES ${KERNELS_FILELIST} DESTINATION "kernels")
