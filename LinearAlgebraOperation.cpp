@@ -12,38 +12,22 @@ LinearAlgebraOperation::LinearAlgebraOperation(ComputePlatform& Platform) :
 
 cl::Event LinearAlgebraOperation::MatVecMul(cl::CommandQueue Queue, cl::Buffer MatrixBuffer, cl::Buffer VectorBuffer, cl::Buffer ResultBuffer, int Count)
 {
-    DEBUG_OPERATION;
+	auto Device = Queue.getInfo<CL_QUEUE_DEVICE>();
+	auto DeviceType = Device.getInfo<CL_DEVICE_TYPE>();
 
-	auto MatVecMulKernel = cl::make_kernel<cl::Buffer, cl::Buffer, int, cl::Buffer>(LinearAlgebraProgram, "MatVecMul");
-    
-    return MatVecMulKernel(
-		cl::EnqueueArgs(Queue, cl::NDRange(Count)), 
-		MatrixBuffer, 
-		VectorBuffer, 
-		Count, 
-		ResultBuffer		
-	);
+	DEBUG_OPERATION;
 
-	//auto MatVecMulKernel = cl::make_kernel<
-	//	cl::Buffer,
-	//	cl::Buffer,
-	//	cl::Buffer,
-	//	cl::LocalSpaceArg,
-	//	int,
-	//	int
-	//>(LinearAlgebraProgram, "gemv2");
+	switch (DeviceType)
+	{
+	case CL_DEVICE_TYPE_CPU:
+		return MatVecMulCPU(Queue, MatrixBuffer, VectorBuffer, ResultBuffer, Count);
+	case CL_DEVICE_TYPE_GPU:
+		return MatVecMulGPU(Queue, MatrixBuffer, VectorBuffer, ResultBuffer, Count);
+	default:
+		break;
+	}
 
-	//int PThreads = 3;
-
-	//return MatVecMulKernel(
-	//	cl::EnqueueArgs(Queue, cl::NDRange(Count, PThreads), cl::NDRange(PThreads, 17)),
-	//	MatrixBuffer,
-	//	VectorBuffer,
-	//	ResultBuffer,
-	//	cl::Local(4096 * sizeof(double)),
-	//	Count, 
-	//	Count
-	//	);
+	return cl::Event();
 }
 
 double LinearAlgebraOperation::DotProduct(cl::CommandQueue Queue, cl::Buffer A, cl::Buffer B, int Count, cl::Buffer CacheBuffer)
@@ -60,4 +44,62 @@ double LinearAlgebraOperation::DotProduct(cl::CommandQueue Queue, cl::Buffer A, 
     auto VecMulEvent = VecMulKernel(cl::EnqueueArgs(Queue, cl::NDRange(Count)), A, B, CacheBuffer, Count);
     
     return ReduceOperation.ReduceDouble(Queue, CacheBuffer, Count, ReductionOp::Sum);
+}
+
+cl::Event LinearAlgebraOperation::MatVecMulCPU(cl::CommandQueue Queue, cl::Buffer MatrixBuffer, cl::Buffer VectorBuffer, cl::Buffer ResultBuffer, int Count)
+{
+	auto MatVecMulKernel = cl::make_kernel<
+		cl::Buffer, 
+		cl::Buffer, 
+		int, 
+		cl::Buffer
+	>(LinearAlgebraProgram, "MatVecMulCPUKernel");
+
+	return MatVecMulKernel(
+		cl::EnqueueArgs(Queue, cl::NDRange(Count)),
+		MatrixBuffer,
+		VectorBuffer,
+		Count,
+		ResultBuffer
+	);
+}
+
+cl::Event LinearAlgebraOperation::MatVecMulGPU(cl::CommandQueue Queue, cl::Buffer MatrixBuffer, cl::Buffer VectorBuffer, cl::Buffer ResultBuffer, int Count)
+{
+	auto MatVecMulKernel = cl::make_kernel<
+		cl::Buffer,
+		cl::Buffer,
+		cl::Buffer,
+		cl::LocalSpaceArg,
+		int,
+		int
+	>(LinearAlgebraProgram, "MatVecMulGPUKernel");
+
+	const int PThreads = 8;
+
+	int WorkGroupCount = Count;
+	while (WorkGroupCount % PThreads != 0)
+	{
+		WorkGroupCount++;
+	}
+
+	int WorkItemCount = 64;
+	while (WorkGroupCount % WorkItemCount != 0)
+	{
+		WorkItemCount >>= 1;
+	}
+
+	return MatVecMulKernel(
+		cl::EnqueueArgs(
+			Queue, 
+			cl::NDRange(WorkGroupCount, PThreads), 
+			cl::NDRange(WorkItemCount, PThreads)
+		),
+		MatrixBuffer,
+		VectorBuffer,
+		ResultBuffer,
+		cl::Local(WorkItemCount * PThreads * sizeof(double)),
+		Count,
+		Count
+	);
 }

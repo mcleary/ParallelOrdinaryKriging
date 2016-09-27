@@ -267,10 +267,6 @@ PointXYZ ReductionOperation::ReducePointsGPUKernel(cl::CommandQueue Queue, cl::B
 	const int BlockSize = std::max(NumberOfBlocks % MaxBlockSize, 1);
     const int NumberOfGroups = std::max(NumberOfBlocks / BlockSize, 1);
 
-	// cout << "Number of Blocks: " << NumberOfBlocks << endl;
-	// cout << "Block Size: " << BlockSize << endl;
-	// cout << "Number of Groups: " << NumberOfGroups << endl;
-
 	const int ResultBufferSize = sizeof(PointXYZ) * NumberOfGroups;
 
 	cl::Buffer ResultBuffer(ThePlatform.Context, CL_MEM_WRITE_ONLY, ResultBufferSize);

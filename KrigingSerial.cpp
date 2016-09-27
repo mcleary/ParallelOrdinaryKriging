@@ -55,8 +55,8 @@ void Serialkriging::SerialKrigFit(const PointVector &InputPoints, int NumberOfPo
     cout << "Computing Semivariogram ... " << flush;
     
     vector<float> EmpiricalSemivariogramX;
-    vector<float> EmpiricalSemivariogramY;
-    
+    vector<float> EmpiricalSemivariogramY;    
+
     for (int LagIndex = 0; LagIndex < LagsCount; ++LagIndex)
     {
         const float RangeMin = LagRanges[LagIndex * 2 + 0];
@@ -90,10 +90,8 @@ void Serialkriging::SerialKrigFit(const PointVector &InputPoints, int NumberOfPo
         AvgDistance /= DistValues.size();
         AvgSemivar /= SemivarValues.size();
         
-		{
-			EmpiricalSemivariogramX.push_back(AvgDistance);
-			EmpiricalSemivariogramY.push_back(0.5f * AvgSemivar);
-		}		
+		EmpiricalSemivariogramX.push_back(AvgDistance);
+		EmpiricalSemivariogramY.push_back(0.5f * AvgSemivar);		
     }
     
     cout << "done" << endl;
@@ -157,7 +155,7 @@ PointVector Serialkriging::SerialKrigPred(const PointVector &InputPoints, int Gr
     
     for (int i = 0; i < GridSize; ++i)
     {
-        cout << i << " " << flush;
+		cout << i << " " << flush;
 
         for (int j = 0; j < GridSize; ++j)
         {
@@ -169,11 +167,11 @@ PointVector Serialkriging::SerialKrigPred(const PointVector &InputPoints, int Gr
                 const auto& Point = InputPoints[PIndex];
                 auto UDist = Dist(GridX, GridY, Point.x, Point.y);
                 RValues[PIndex] = SphericalModel(UDist, Nugget, Range, Sill);
-            }
-            
-            InvAXR = InvCovMatrix * RValues;
+            }            		
+
+			InvAXR = InvCovMatrix * RValues;			
             double GridZ = InvAXR.dot(ZValues);
-            
+
             Grid[i + j * GridSize] = PointXYZ(GridX, GridY, GridZ);			
         }
     }

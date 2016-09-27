@@ -30,6 +30,7 @@ class ComputePlatform
 {
 public:
     static int GetPlatformCount();
+	static double GetEventElapsedTime(cl::Event Event);
     
     explicit ComputePlatform(int PlatformIndex = 0, int NumDevices = -1);
     
@@ -37,11 +38,11 @@ public:
     
     cl::CommandQueue GetNextCommandQueue();	
     
-    void PrintDeviceName(const std::string& Description, cl::CommandQueue Queue);
+    void PrintDeviceName(const std::string& Description, cl::CommandQueue Queue);	
 
 	void RecordEvent(const std::vector<std::string>& Tags, cl::Event Event);
 	void RecordTime(const std::vector<std::string>& Tags, long int Time);
-    
+
 public:
     cl::Platform                    Platform;
     cl::Context                     Context;

@@ -279,8 +279,6 @@ vector<PointXYZ> KrigingOperation::KrigPred(const PointVector& InputPoints, int 
 					Range,
 					Sill);
 
-				Timer MatVecMulTimer;
-
 				auto MatVecMulEvent = LinAlgOperation.MatVecMul(Queue, InvCovMatrixBuffer, RBuffer, InvAXRBuffer, CovMatrixRowsCount);
 				double GridZ = LinAlgOperation.DotProduct(Queue, InvAXRBuffer, ZValuesBuffer, CovMatrixRowsCount, Cache);
 

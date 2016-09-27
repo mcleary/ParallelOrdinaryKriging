@@ -166,6 +166,6 @@ int main(int ArgC, char* ArgV[])
 	{
 		cout << "[ERROR] " << Exception.what() << endl;
 	}	
-    
+
     return EXIT_SUCCESS;
 }

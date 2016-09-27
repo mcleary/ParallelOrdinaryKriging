@@ -33,6 +33,16 @@ static vector<cl::Platform> GetPlatforms()
     return TempPlatforms;
 }
 
+double ComputePlatform::GetEventElapsedTime(cl::Event Event)
+{
+	auto StartTime = Event.getProfilingInfo<CL_PROFILING_COMMAND_START>();
+	auto EndTime = Event.getProfilingInfo<CL_PROFILING_COMMAND_END>();
+	auto ElapsedNanoSec = EndTime - StartTime;
+	auto ElapsedMilliSec = chrono::duration_cast<chrono::milliseconds>(chrono::nanoseconds(ElapsedNanoSec)).count();
+
+	return ElapsedMilliSec;
+}
+
 int ComputePlatform::GetPlatformCount()
 {
     return static_cast<int>(GetPlatforms().size());
@@ -138,17 +148,12 @@ void ComputePlatform::RecordEvent(const std::vector<std::string>& Tags, cl::Even
 {
 	if (bProfile)
 	{
-		auto StartTime = Event.getProfilingInfo<CL_PROFILING_COMMAND_START>();
-		auto EndTime = Event.getProfilingInfo<CL_PROFILING_COMMAND_END>();
-		auto ElapsedNanoSec = EndTime - StartTime;
-		auto ElapsedMilliSec = chrono::duration_cast<chrono::milliseconds>(chrono::nanoseconds(ElapsedNanoSec)).count();
+		double ElapsedMilliSec = GetEventElapsedTime(Event);
 		
+		unique_lock<mutex> Lock(RecordEventMutex);
+		for (auto Tag : Tags)
 		{
-			unique_lock<mutex> Lock(RecordEventMutex);
-			for (auto Tag : Tags)
-			{
-				ProfilingMap[Tag] += static_cast<long int>(ElapsedMilliSec);
-			}			
+			ProfilingMap[Tag] += static_cast<long int>(ElapsedMilliSec);
 		}		
 	}	
 }
@@ -157,13 +162,11 @@ void ComputePlatform::RecordTime(const std::vector<std::string>& Tags, long int 
 {
 	if (bProfile)
 	{
+		unique_lock<mutex> Lock(RecordEventMutex);
+		for (auto Tag : Tags)
 		{
-			unique_lock<mutex> Lock(RecordEventMutex);
-			for (auto Tag : Tags)
-			{
-				ProfilingMap[Tag] += Time;
-			}
-		}
+			ProfilingMap[Tag] += Time;
+		}	
 	}
 }
 
@@ -197,6 +200,7 @@ ostream& operator<< (ostream& out, const ComputePlatform& aComputingPlatform)
 
 		out << "\tMax Work Group Size: " << aDevice.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>() << endl;
 		out << "\tMax Compute Units: " << aDevice.getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>() << endl;
+		out << "\tMax Work Item Dimensions: " << aDevice.getInfo<CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS>() << endl;
 		out << "\tMem Base Addr Align: " << aDevice.getInfo<CL_DEVICE_MEM_BASE_ADDR_ALIGN>() << endl;
         out << endl;
 	}    

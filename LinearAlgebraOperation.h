@@ -14,6 +14,9 @@ public:
     double DotProduct(cl::CommandQueue Queue, cl::Buffer A, cl::Buffer B, int Count, cl::Buffer CacheBuffer);
     
 private:
+	cl::Event MatVecMulCPU(cl::CommandQueue Queue, cl::Buffer MatrixBuffer, cl::Buffer VectorBuffer, cl::Buffer ResultBuffer, int Count);
+	cl::Event MatVecMulGPU(cl::CommandQueue Queue, cl::Buffer MatrixBuffer, cl::Buffer VectorBuffer, cl::Buffer ResultBuffer, int Count);
+
     cl::Program      LinearAlgebraProgram;
 	cl::Kernel       KernelTest;
 	
