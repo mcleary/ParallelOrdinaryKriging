@@ -9,12 +9,14 @@ public:
 
     void start();
     void stop();
-    
+
     double elapsedMilliseconds();
     double elapsedSeconds();
-    
+
 private:
-    std::chrono::time_point<std::chrono::system_clock> m_StartTime;
-    std::chrono::time_point<std::chrono::system_clock> m_EndTime;
-    bool                                               m_bRunning = false;
+    std::chrono::steady_clock::duration _elapsed() const;
+
+    std::chrono::steady_clock::time_point m_StartTime;
+    std::chrono::steady_clock::time_point m_EndTime;
+    bool                                  m_bRunning = false;
 };
