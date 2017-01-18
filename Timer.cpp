@@ -1,6 +1,8 @@
 
 #include "Timer.h"
 
+using namespace std::chrono;
+
 Timer::Timer()
 {
     start();
@@ -8,33 +10,38 @@ Timer::Timer()
 
 void Timer::start()
 {
-    m_StartTime = std::chrono::system_clock::now();
+    m_StartTime = steady_clock::now();
     m_bRunning = true;
 }
 
 void Timer::stop()
 {
-    m_EndTime = std::chrono::system_clock::now();
+    m_EndTime = steady_clock::now();
     m_bRunning = false;
 }
 
 double Timer::elapsedMilliseconds()
 {
-    std::chrono::time_point<std::chrono::system_clock> endTime;
-    
+    return duration_cast<milliseconds>(_elapsed()).count();
+}
+
+double Timer::elapsedSeconds()
+{
+    return duration_cast<seconds>(_elapsed()).count();
+}
+
+steady_clock::duration Timer::_elapsed() const
+{
+    decltype(m_StartTime) endTime;
+
     if(m_bRunning)
     {
-        endTime = std::chrono::system_clock::now();
+        endTime = steady_clock::now();
     }
     else
     {
         endTime = m_EndTime;
     }
-    
-    return static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(endTime - m_StartTime).count());
-}
 
-double Timer::elapsedSeconds()
-{
-    return elapsedMilliseconds() / 1000.0;
+    return endTime - m_StartTime;
 }
