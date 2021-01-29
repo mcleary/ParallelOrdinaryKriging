@@ -48,7 +48,7 @@ The experiments were performed on a machine with 64 AMD Opteron(TM) Processor 62
 
 Our results were published in the [CCIS 2016](http://www.epacis.net/ccis2016/en/index.php). The link to the full paper can be found below.
 
-### [A parallel implementation of the ordinary kriging algorithm for heterogeneous computing environments](https://www.dropbox.com/s/d39y6495u6zkvt3/parallel-implementation-ordinary.pdf?dl=0)
+### [A parallel implementation of the ordinary kriging algorithm for heterogeneous computing environments](http://epacis.net/jcis/PDF_JCIS/JCIS11-art.0131.pdf)
 
 ![Prediction Runtimes](Figures/PredRuntime.png)
 
