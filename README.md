@@ -50,7 +50,7 @@ Our results were published in the [CCIS 2016](http://www.epacis.net/ccis2016/en/
 
 ### [A parallel implementation of the ordinary kriging algorithm for heterogeneous computing environments](https://www.dropbox.com/s/d39y6495u6zkvt3/parallel-implementation-ordinary.pdf?dl=0)
 
-![Prediction Runtimes](https://bytebucket.org/pgmc-ufjf/parallelordinarykriging/raw/224d7787c8963d70c17501b42cb80c2a692c1855/Figures/PredRuntime.png)
+![Prediction Runtimes](Figures/PredRuntime.png)
 
-![Prediction Speedups](https://bytebucket.org/pgmc-ufjf/parallelordinarykriging/raw/224d7787c8963d70c17501b42cb80c2a692c1855/Figures/PredSpeedup.png)
+![Prediction Speedups](Figures/PredSpeedup.png)
 
